@@ -1,0 +1,41 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for creating an ec2 instance
+Parameters:
+  KeyName:
+    Description: Key Pair name
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: my_keypair_name
+  InstanceType:
+    Description: Select one of the possible instance types
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+    - t2.micro
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: My security group
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+  Server:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-04681a1dbd79675a5
+      InstanceType:
+        Ref: InstanceType
+      KeyName:
+        Ref: KeyName
+      SecurityGroupIds:
+      - Ref: SecurityGroup
+Outputs:
+  PublicName:
+    Value:
+      Fn::GetAtt:
+      - Server
+      - PublicDnsName
+    Description: Public name (connect via SSH)
